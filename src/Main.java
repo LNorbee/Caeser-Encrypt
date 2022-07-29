@@ -1,52 +1,90 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		
-		Scanner readFrom = new Scanner(System.in);
+		Scanner read = new Scanner(System.in);
 		System.out.print("Beírod a kódolni való szöveget? ");
-		String text = readFrom.next();
+		String text = read.next();
 		
-		yesOrNo(readFrom, text);
-		readFrom.close();
+		yesOrNo(text);
+		read.close();
 	}
 	
-	
-//------------------Metódusok----------------------------------------	
+//---------------------------Metódusok----------------------------------------	
 
-	private static void yesOrNo(Scanner readFrom, String text) {
-		if (text.equals("Y")) {
+	private static void yesOrNo(String text) throws IOException{
+		if (text.equals("y")) {
+			System.out.print("Caesar (c) vagy Vigenére (v) titkosítást szeretne használni? ");
 			Scanner scan = new Scanner(System.in);
+			String caesarOrVigenere = scan.next();
+			
+			if (caesarOrVigenere.equals("c")) {
 			System.out.print("Add meg a kódolni kívánt szót: ");
 
 			// Megadom a szót String-ként
-			String word = scan.next();
-			scan.close();
-			
+			Scanner scan2 = new Scanner(System.in);
+			String word = scan2.next();
+
 			ceasarEncryption(word);
 			
-		} else if (text.equals("N")) {
-		    try {
-		        File myObj = new File("text.txt");
-		        Scanner myReader = new Scanner(myObj);
-		        while (myReader.hasNextLine()) {
-		          String data = myReader.nextLine();
-		          ceasarEncryption(data);
-		        }
-		        myReader.close();
-		      } catch (FileNotFoundException e) {
-		        System.out.println("Hiba történt!");
-		        e.printStackTrace();
-		      }
+			scan.close();		// Ha a "if (cOrV.equals("c")) {" sor elé rakom hibába fut...
+			scan2.close();
+			
+			} else if (caesarOrVigenere.equals("v")) {
+				System.out.println("Coming soon...");
+			}
+			
+		} else if (text.equals("n")) {
+			String fileContent = readFromTxt();
+			
+			System.out.println("A kódolt szöveg: " + fileContent + "\n");
+			
+			System.out.print("Szeretné menteni egy .txt fájlba a kódolt szöveget? ");
+			
+			Scanner scan4 = new Scanner(System.in);
+			String decide = scan4.next();
+			scan4.close();
+			
+			
+			if (decide.equals("y")) {
+				String result = readFromTxt();
+				
+				FileWriter writer = new FileWriter("encrypted_text.txt");
+				writer.write(result);
+				writer.close();
+				
+				System.out.println("Sikeresen mentve az 'encrypted_text.txt' fájlba.");
+			}
+			else {
+				System.out.println("End.");
+			}
+			
 		} else {
-			System.out.println("Nem megfelelő válasz, add meg újra: ");      // ???
+			System.out.println("Nem megfelelő válasz, add meg újra: ");      // ??? do-while
 		}
 	}
 
-	static void ceasarEncryption(String word) {
+ static String readFromTxt() throws FileNotFoundException {
+	String fileContent = "";
+	
+	File file = new File("text.txt");
+	Scanner scan3 = new Scanner(file);
+	while(scan3.hasNextLine()) {		
+		fileContent = fileContent.concat(scan3.nextLine()+ "\n");
+	}
+	scan3.close();
+	return ceasarEncryption(fileContent);
+}
+	
+//----------------------------------------------------------------------------
+
+	static String ceasarEncryption(String word) {
 
 		char[] abc = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's',
 				't', 'u', 'v', 'w', 'x', 'y', 'z'};
@@ -89,10 +127,11 @@ public class Main {
 	
 		String encryptString = String.valueOf(encryptWord);
 		
-		System.out.print("A titkosított szó: " + encryptString);
+		return encryptString;
 	}
 	
-	
+//----------------------------------------------------------------------------
+
 	
 	static int getIndexOfAbcArray(char[] abc, int position) {
 		
